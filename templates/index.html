@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Receipt Generator (RPWA 28)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+            max-width: 90vw;
+        }
+        
+        h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+        
+        .file-input-container {
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="file"]:hover {
+            border-color: #007bff;
+        }
+        
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        button {
+            background-color: #007bff;
+            border: none;
+            padding: 12px 24px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .note {
+            font-size: 14px;
+            color: #555;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+        
+        .note strong {
+            color: #333;
+        }
+        
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-box">
+        <h2>Upload Excel File for Hand Receipts</h2>
+        
+        <div class="error" id="error-message"></div>
+        <div class="success" id="success-message"></div>
+        
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="file-input-container">
+                <input type="file" name="file" accept=".xlsx" required id="file-input">
+            </div>
+            
+            <button type="submit" id="submit-btn">
+                <span class="btn-text">Generate PDF</span>
+                <span class="loading" id="loading">
+                    <span class="spinner"></span>Processing...
+                </span>
+            </button>
+        </form>
+        
+        <p class="note">
+            Make sure your Excel file has columns:<br>
+            <strong>Payee Name, Amount, Work</strong><br>
+            <small>Maximum 50 rows will be processed</small>
+        </p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('upload-form');
+            const fileInput = document.getElementById('file-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.querySelector('.btn-text');
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('error-message');
+            const successMsg = document.getElementById('success-message');
+            
+            // File validation
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    if (!file.name.toLowerCase().endsWith('.xlsx')) {
+                        showError('Please select an Excel (.xlsx) file');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                        showError('File size too large. Please select a file smaller than 10MB');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    hideMessages();
+                }
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                const file = fileInput.files[0];
+                if (!file) {
+                    e.preventDefault();
+                    showError('Please select a file');
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                btnText.style.display = 'none';
+                loading.style.display = 'inline-block';
+                hideMessages();
+            });
+            
+            function showError(message) {
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                successMsg.textContent = message;
+                successMsg.style.display = 'block';
+                errorMsg.style.display = 'none';
+            }
+            
+            function hideMessages() {
+                errorMsg.style.display = 'none';
+                successMsg.style.display = 'none';
+            }
+            
+            // Reset form state on page load
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline';
+            loading.style.display = 'none';
+            hideMessages();
+        });
+    </script>
+</body>
+</html>

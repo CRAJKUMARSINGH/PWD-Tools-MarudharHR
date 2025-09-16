@@ -1,0 +1,7 @@
+flask
+pandas
+jinja2
+weasyprint
+num2words
+openpyxl
+gunicorn
