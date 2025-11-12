@@ -15,6 +15,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# VERSION INDICATOR - If you see this version, the new code is deployed!
+APP_VERSION = "v3.0-BEAUTIFUL-2024-11-12"
+
 # Force cache clear on Streamlit Cloud
 import hashlib
 import time
@@ -669,12 +672,13 @@ if uploaded_file is not None:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Credits section - Enhanced
-st.markdown("""
-<div class='credits'>
-    <h3>🏛️ PWD Electric Division, Udaipur</h3>
-    <p><strong>Hand Receipt Generator v2.0</strong></p>
-    <p>Professional EMD Refund Receipt Generation System</p>
+# Credits section - Enhanced (WITH INLINE STYLES)
+st.markdown(f"""
+<div style='background: rgba(255, 255, 255, 0.95); padding: 2rem; border-radius: 20px; 
+            margin-top: 3rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);'>
+    <h3 style='color: #2ecc71; margin-bottom: 1rem;'>🏛️ PWD Electric Division, Udaipur</h3>
+    <p style='color: #666; margin: 0.5rem 0;'><strong>Hand Receipt Generator {APP_VERSION}</strong></p>
+    <p style='color: #666; margin: 0.5rem 0;'>Professional EMD Refund Receipt Generation System</p>
     <div style='margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;'>
         <p style='margin: 0.3rem 0; font-size: 0.85rem; color: #666;'><strong>🌟 Prepared on Initiative of:</strong></p>
         <p style='margin: 0.3rem 0; color: #2ecc71; font-weight: 600; font-size: 1rem;'>Mrs. Premlata Jain, AAO</p>
