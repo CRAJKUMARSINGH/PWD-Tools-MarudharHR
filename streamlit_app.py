@@ -11,7 +11,8 @@ from weasyprint import HTML
 st.set_page_config(
     page_title="Hand Receipt Generator (RPWA 28)",
     page_icon="📄",
-    layout="centered"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Receipt template
@@ -195,52 +196,247 @@ def process_excel_file(file):
     except Exception as e:
         return None, f"Error processing file: {str(e)}"
 
-# Main UI
-st.title("📄 Hand Receipt Generator (RPWA 28)")
-st.markdown("---")
-
+# Custom CSS for beautiful styling
 st.markdown("""
-### Upload Excel File
-Upload an Excel file (.xlsx) containing the following columns:
-- **Payee Name**: Contractor/payee name
-- **Amount**: Payment amount (numeric)
-- **Work**: Work description
-""")
+<style>
+    /* Main container styling */
+    .main {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+    }
+    
+    /* Card styling */
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Custom card */
+    .custom-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        margin: 2rem auto;
+        max-width: 800px;
+    }
+    
+    /* Title styling */
+    .custom-title {
+        font-size: 3rem;
+        font-weight: 800;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    
+    .custom-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    
+    /* Balloon animation */
+    .balloon {
+        font-size: 3rem;
+        animation: float 3s ease-in-out infinite;
+        display: inline-block;
+        margin: 0 0.5rem;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    /* Info boxes */
+    .info-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 1.5rem 0;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .info-box h3 {
+        margin-top: 0;
+        font-size: 1.3rem;
+    }
+    
+    .info-box ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    }
+    
+    /* Download button */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        width: 100%;
+    }
+    
+    /* File uploader */
+    .stFileUploader {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px dashed #667eea;
+    }
+    
+    /* Credits section */
+    .credits {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2rem;
+        border-radius: 20px;
+        margin-top: 3rem;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .credits h3 {
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    
+    .credits p {
+        color: #666;
+        margin: 0.5rem 0;
+    }
+    
+    /* Success/Error messages */
+    .stSuccess, .stError, .stInfo {
+        border-radius: 10px;
+        padding: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Header with balloons
+st.markdown("""
+<div style='text-align: center; padding: 2rem 0;'>
+    <span class='balloon'>🎈</span>
+    <span class='balloon'>🎊</span>
+    <span class='balloon'>🎉</span>
+</div>
+""", unsafe_allow_html=True)
+
+# Main content in a card
+st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+
+# Title
+st.markdown("<h1 class='custom-title'>📄 Hand Receipt Generator</h1>", unsafe_allow_html=True)
+st.markdown("<p class='custom-subtitle'>RPWA 28 - PWD Electric Division, Udaipur</p>", unsafe_allow_html=True)
+
+# Info box
+st.markdown("""
+<div class='info-box'>
+    <h3>📋 How to Use</h3>
+    <ul>
+        <li><strong>Step 1:</strong> Prepare your Excel file (.xlsx) with required columns</li>
+        <li><strong>Step 2:</strong> Upload the file using the button below</li>
+        <li><strong>Step 3:</strong> Click Generate PDF and download your receipts</li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
+
+# Required columns info
+st.markdown("""
+<div class='info-box'>
+    <h3>📊 Required Excel Columns</h3>
+    <ul>
+        <li><strong>Payee Name:</strong> Contractor/payee name (or Name, Contractor, Payee)</li>
+        <li><strong>Amount:</strong> Payment amount in numbers (or Value, Cost, Payment, Total)</li>
+        <li><strong>Work:</strong> Work description (or Description, Item, Project, Job)</li>
+    </ul>
+    <p style='margin-top: 1rem; font-size: 0.9rem;'>⚠️ Maximum 50 rows will be processed per file</p>
+</div>
+""", unsafe_allow_html=True)
 
 # File uploader
+st.markdown("<br>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader(
-    "Choose an Excel file",
+    "📁 Choose your Excel file",
     type=['xlsx'],
-    help="Maximum 50 rows will be processed"
+    help="Upload .xlsx file (max 10MB, 50 rows)"
 )
 
 if uploaded_file is not None:
-    # Show file details
-    st.info(f"📁 File: {uploaded_file.name} ({uploaded_file.size / 1024:.2f} KB)")
+    # Show file details with nice styling
+    st.markdown(f"""
+    <div style='background: #e3f2fd; padding: 1rem; border-radius: 10px; margin: 1rem 0;'>
+        <p style='margin: 0; color: #1976d2;'>
+            <strong>📁 File:</strong> {uploaded_file.name} 
+            <strong>📊 Size:</strong> {uploaded_file.size / 1024:.2f} KB
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Process button
     if st.button("🚀 Generate PDF", type="primary"):
-        with st.spinner("Processing Excel file and generating PDF..."):
+        with st.spinner("✨ Processing your file and generating beautiful PDFs..."):
             pdf_bytes, error = process_excel_file(uploaded_file)
             
             if error:
                 st.error(f"❌ {error}")
             else:
                 st.success("✅ PDF generated successfully!")
+                st.balloons()
                 
                 # Download button
                 st.download_button(
                     label="📥 Download PDF",
                     data=pdf_bytes,
-                    file_name="receipts.pdf",
+                    file_name="hand_receipts.pdf",
                     mime="application/pdf"
                 )
 
-# Footer
-st.markdown("---")
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Credits section
 st.markdown("""
-<div style='text-align: center; color: #666; font-size: 0.9em;'>
-    <p>PWD Electric Division, Udaipur</p>
-    <p>Hand Receipt Generator v2.0</p>
+<div class='credits'>
+    <h3>🏛️ PWD Electric Division, Udaipur</h3>
+    <p><strong>Hand Receipt Generator v2.0</strong></p>
+    <p>Developed for efficient receipt generation and management</p>
+    <p style='margin-top: 1rem; font-size: 0.9rem; color: #999;'>
+        Made with ❤️ for PWD | Powered by Streamlit
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# Footer balloons
+st.markdown("""
+<div style='text-align: center; padding: 2rem 0;'>
+    <span class='balloon'>🎈</span>
+    <span class='balloon'>🎊</span>
+    <span class='balloon'>🎉</span>
 </div>
 """, unsafe_allow_html=True)
