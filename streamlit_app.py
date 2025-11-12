@@ -310,9 +310,30 @@ def process_excel_file(file):
     except Exception as e:
         return None, f"Error processing file: {str(e)}"
 
-# Custom CSS for beautiful styling
+# Custom CSS for beautiful styling - Inspired by BillGenerator
 st.markdown("""
 <style>
+    /* Green Header Styling */
+    .main-header {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .main-header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .main-header p {
+        color: #ecf0f1;
+        font-size: 1.1rem;
+        margin: 0.5rem 0 0 0;
+    }
+    
     /* Main container styling */
     .main {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -331,25 +352,7 @@ st.markdown("""
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         margin: 2rem auto;
-        max-width: 800px;
-    }
-    
-    /* Title styling */
-    .custom-title {
-        font-size: 3rem;
-        font-weight: 800;
-        text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    
-    .custom-subtitle {
-        text-align: center;
-        color: #666;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
+        max-width: 900px;
     }
     
     /* Balloon animation */
@@ -367,12 +370,12 @@ st.markdown("""
     
     /* Info boxes */
     .info-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: white;
         padding: 1.5rem;
         border-radius: 15px;
         margin: 1.5rem 0;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
     }
     
     .info-box h3 {
@@ -387,33 +390,33 @@ st.markdown("""
     
     /* Button styling */
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
         color: white;
         border: none;
         padding: 0.75rem 2rem;
         font-size: 1.1rem;
         font-weight: 600;
         border-radius: 50px;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
         transition: all 0.3s ease;
         width: 100%;
     }
     
     .stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        box-shadow: 0 15px 40px rgba(46, 204, 113, 0.6);
     }
     
     /* Download button */
     .stDownloadButton > button {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: white;
         border: none;
         padding: 0.75rem 2rem;
         font-size: 1.1rem;
         font-weight: 600;
         border-radius: 50px;
-        box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
         width: 100%;
     }
     
@@ -422,7 +425,7 @@ st.markdown("""
         background: #f8f9fa;
         padding: 2rem;
         border-radius: 15px;
-        border: 2px dashed #667eea;
+        border: 2px dashed #2ecc71;
     }
     
     /* Credits section */
@@ -436,7 +439,7 @@ st.markdown("""
     }
     
     .credits h3 {
-        color: #667eea;
+        color: #2ecc71;
         margin-bottom: 1rem;
     }
     
@@ -445,29 +448,50 @@ st.markdown("""
         margin: 0.5rem 0;
     }
     
+    /* Metric Cards */
+    [data-testid="stMetricValue"] {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2ecc71;
+    }
+    
     /* Success/Error messages */
     .stSuccess, .stError, .stInfo {
         border-radius: 10px;
         padding: 1rem;
+    }
+    
+    /* Progress Bar */
+    .stProgress > div > div > div {
+        background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Header with balloons
 st.markdown("""
-<div style='text-align: center; padding: 2rem 0;'>
+<div style='text-align: center; padding: 1rem 0;'>
     <span class='balloon'>🎈</span>
     <span class='balloon'>🎊</span>
     <span class='balloon'>🎉</span>
 </div>
 """, unsafe_allow_html=True)
 
+# Beautiful Green Header with Credits
+st.markdown("""
+<div class="main-header">
+    <h1>📄 Hand Receipt Generator (RPWA 28)</h1>
+    <p>🏛️ Generate professional hand receipts for EMD refunds with perfect A4 formatting</p>
+    <div style='text-align: center; margin-top: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.15); 
+                border-radius: 8px;'>
+        <p style='margin: 0; font-size: 0.85rem; color: #ecf0f1;'>Prepared on Initiative of</p>
+        <p style='margin: 0.3rem 0; font-size: 1.1rem; font-weight: 700; color: white;'>Mrs. Premlata Jain, AAO, PWD Udaipur</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # Main content in a card
 st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
-
-# Title
-st.markdown("<h1 class='custom-title'>📄 Hand Receipt Generator</h1>", unsafe_allow_html=True)
-st.markdown("<p class='custom-subtitle'>RPWA 28 - PWD Electric Division, Udaipur</p>", unsafe_allow_html=True)
 
 # Info box
 st.markdown("""
@@ -534,12 +558,17 @@ if uploaded_file is not None:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Credits section
+# Credits section - Enhanced
 st.markdown("""
 <div class='credits'>
     <h3>🏛️ PWD Electric Division, Udaipur</h3>
     <p><strong>Hand Receipt Generator v2.0</strong></p>
-    <p>Developed for efficient receipt generation and management</p>
+    <p>Professional EMD Refund Receipt Generation System</p>
+    <div style='margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;'>
+        <p style='margin: 0.3rem 0; font-size: 0.85rem; color: #666;'><strong>🌟 Prepared on Initiative of:</strong></p>
+        <p style='margin: 0.3rem 0; color: #2ecc71; font-weight: 600; font-size: 1rem;'>Mrs. Premlata Jain, AAO</p>
+        <p style='margin: 0.3rem 0; font-size: 0.85rem; color: #666;'>PWD Udaipur</p>
+    </div>
     <p style='margin-top: 1rem; font-size: 0.9rem; color: #999;'>
         Made with ❤️ for PWD | Powered by Streamlit
     </p>
