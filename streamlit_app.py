@@ -263,6 +263,9 @@ def find_column(df_columns, possible_names):
 def process_excel_file(file):
     """Process uploaded Excel file and generate PDF"""
     try:
+        # Reset file pointer to beginning (CRITICAL for avoiding cached data!)
+        file.seek(0)
+        
         # Read Excel file
         df = pd.read_excel(file, nrows=50)
         
@@ -541,40 +544,80 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# File uploader
+# Initialize session state for file tracking
+if 'last_file_name' not in st.session_state:
+    st.session_state.last_file_name = None
+if 'last_file_id' not in st.session_state:
+    st.session_state.last_file_id = None
+
+# File uploader with unique key to prevent caching issues
 st.markdown("<br>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader(
     "📁 Choose your Excel file",
     type=['xlsx'],
-    help="Upload .xlsx file (max 10MB, 50 rows)"
+    help="Upload .xlsx file (max 10MB, 50 rows)",
+    key="excel_uploader"
 )
 
 if uploaded_file is not None:
+    # Generate unique file ID based on name and size
+    current_file_id = f"{uploaded_file.name}_{uploaded_file.size}"
+    
+    # Check if this is a NEW file (different from last upload)
+    if current_file_id != st.session_state.last_file_id:
+        st.session_state.last_file_id = current_file_id
+        st.session_state.last_file_name = uploaded_file.name
+        # Clear any cached data
+        if 'pdf_bytes' in st.session_state:
+            del st.session_state.pdf_bytes
     # Show file details with nice styling and celebration
+    file_status = "🆕 NEW FILE" if current_file_id != st.session_state.get('last_processed_id') else "✅ READY"
+    
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); 
                 padding: 1.5rem; border-radius: 15px; margin: 1rem 0; 
                 border-left: 5px solid #2196f3; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
         <p style='margin: 0; color: #1976d2; font-size: 1.1rem;'>
             <span class='celebrate' style='display: inline-block;'>🎉</span>
-            <strong>📁 File Uploaded:</strong> {uploaded_file.name} 
+            <strong>📁 File:</strong> {uploaded_file.name} 
             <strong>📊 Size:</strong> {uploaded_file.size / 1024:.2f} KB
+            <strong>🔖 Status:</strong> {file_status}
             <span class='celebrate' style='display: inline-block;'>🎉</span>
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Mini celebration
-    st.balloons()
+    # Mini celebration only for NEW files
+    if current_file_id != st.session_state.get('last_processed_id'):
+        st.balloons()
     
-    # Process button
-    if st.button("🚀 Generate PDF", type="primary"):
+    # Process button with columns for better layout
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        process_button = st.button("🚀 Generate PDF", type="primary", use_container_width=True)
+    
+    with col2:
+        if st.button("🗑️ Clear", use_container_width=True):
+            # Clear session state
+            st.session_state.last_file_id = None
+            st.session_state.last_file_name = None
+            if 'pdf_bytes' in st.session_state:
+                del st.session_state.pdf_bytes
+            st.rerun()
+    
+    if process_button:
         with st.spinner("✨ Processing your file and generating beautiful PDFs..."):
+            # Always read fresh data from the uploaded file
+            uploaded_file.seek(0)  # Reset to beginning
             pdf_bytes, error = process_excel_file(uploaded_file)
             
             if error:
                 st.error(f"❌ {error}")
             else:
+                # Store the processed file ID
+                st.session_state.last_processed_id = current_file_id
+                
                 # BIG CELEBRATION!
                 st.success("✅ PDF generated successfully!")
                 st.balloons()
