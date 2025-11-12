@@ -15,58 +15,120 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Receipt template
+# Receipt template - EXACT format from emd-refund.html
 receipt_template = Template("""
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=210mm, height=297mm">
     <title>Hand Receipt (RPWA 28)</title>
     <style>
-        body { font-family: sans-serif; margin: 0; }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+        }
+
         @page {
+            size: A4 portrait;
             margin: 10mm;
         }
+
         .container {
-            width: 210mm !important;
-            min-height: 297mm;
-            margin: 10mm 20mm !important;
-            border: 2px solid #ccc !important;
-            padding: 0mm;
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            padding: 20px;
             box-sizing: border-box;
             position: relative;
-            page-break-before: always;
+            page-break-after: always;
         }
-        .container:first-child {
-            page-break-before: auto;
+
+        .header {
+            text-align: center;
+            margin-bottom: 2px;
         }
-        .header { text-align: center; margin-bottom: 2px; }
-        .details { margin-bottom: 1px; }
-        .amount-words { font-style: italic; }
-        .signature-area { width: 100%; border-collapse: collapse; margin-top: 20px; }
+
+        .details {
+            margin-bottom: 1px;
+        }
+
+        .amount-words {
+            font-style: italic;
+        }
+
+        .signature-area {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
         .signature-area td, .signature-area th {
-            border: 1px solid #ccc !important;
+            border: 1px solid #ccc;
             padding: 5px;
             text-align: left;
         }
-        .offices { width: 100%; border-collapse: collapse; margin-top: 20px; }
+
+        .offices {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
         .offices td, .offices th {
-            border: 1px solid black !important;
+            border: 1px solid black;
             padding: 5px;
             text-align: left;
             word-wrap: break-word;
         }
-        .input-field { border-bottom: 1px dotted #ccc; padding: 3px; width: calc(100% - 10px); display: inline-block; }
-        .seal-container { position: absolute; left: 10mm; bottom: 10mm; width: 40mm; height: 25mm; z-index: 10; }
-        .seal { max-width: 100%; max-height: 100%; text-align: center; line-height: 40mm; color: blue; display: flex; justify-content: space-around; align-items: center; }
-        .bottom-left-box { 
-            position: absolute; bottom: 40mm; left: 40mm; 
-            border: 2px solid blue; padding: 10px; 
-            width: 450px; text-align: left; height: 55mm; 
-            color: blue; 
+
+        .input-field {
+            border-bottom: 1px dotted #ccc;
+            padding: 3px;
+            width: calc(100% - 10px);
+            display: inline-block;
         }
-        .bottom-left-box p { margin: 3px 0; }
+
+        .seal-container {
+            position: absolute;
+            left: 10mm;
+            bottom: 10mm;
+            width: 40mm;
+            height: 25mm;
+            z-index: 10;
+        }
+
+        .seal {
+            max-width: 100%;
+            max-height: 100%;
+            text-align: center;
+            line-height: 40mm;
+            color: blue;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-left-box {
+            position: absolute;
+            bottom: 40mm;
+            left: 40mm;
+            border: 2px solid black;
+            padding: 10px;
+            width: 300px;
+            text-align: left;
+            height: auto;
+        }
+
+        .bottom-left-box p {
+            margin: 3px 0;
+        }
+
+        .bottom-left-box .blue-text {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -81,11 +143,11 @@ receipt_template = Template("""
         <div class="details">
             <p>(1)Cash Book Voucher No. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
             <p>(2)Cheque No. and Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-            <p>(3) Pay for ECS Rs.{{ receipt.amount }}/- (Rupees <span class="amount-words">{{ receipt.amount_words }} Only</span>)</p>
+            <p>(3) Pay for ECS Rs.{{ receipt.amount }}/- (Rupees <span class="amount-words">{{ receipt.amount_words }} only</span>)</p>
             <p>(4) Paid by me</p>
-            <p>(5) Received from The Executive Engineer PWD Electric Division, Udaipur the sum of Rs. {{ receipt.amount }}/- (Rupees <span class="amount-words">{{ receipt.amount_words }} Only</span>)</p>
-            <p> Name of work for which payment is made: <span id="work-name" class="input-field">{{ receipt.work }}</span></p>
-            <p> Chargeable to Head:- 8443 [EMD- Refund] </p>
+            <p>(5) Received from The Executive Engineer PWD Electric Division, Udaipur the sum of Rs. {{ receipt.amount }}/- (Rupees <span class="amount-words">{{ receipt.amount_words }} only</span>)</p>
+            <p> Name of work for which payment is made: <span class="input-field">{{ receipt.work }}</span></p>
+            <p> Chargeable to Head:- 8443 [EMD-Refund] </p>   
             <table class="signature-area">
                 <tr>
                     <td>Witness</td>
@@ -109,7 +171,9 @@ receipt_template = Template("""
                 </tr>
                 <tr>
                     <td>Accounts Clerk</td>
-                    <td>DA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Auditor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Supdt. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G.O.</td>
+                    <td>
+                        DA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Auditor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Supdt. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G.O.
+                    </td>
                 </tr>
             </table>
         </div>
@@ -121,14 +185,13 @@ receipt_template = Template("""
             </div>
         </div>
         <div class="bottom-left-box">
-                <p></p>
-                <p></p>
-                <p></p>
-            <p> Passed for Rs. {{ receipt.amount }}</p>
-            <p> In Words Rupees: {{ receipt.amount_words }} Only</p>
-            <p> Chargeable to Head:- 8443 [EMD- Refund]</p>
+            <p class="blue-text"> Passed for Rs. {{ receipt.amount }}</p>
+            <p class="blue-text"> In Words Rupees: {{ receipt.amount_words }} Only</p>
+            <p class="blue-text"> Chargeable to Head:- 8443 [EMD-Refund]</p>
             <div class="seal">
-                <p>Ar.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.A.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E.E.</p>
+                <p>Ar.</p>
+                <p>D.A.</p>
+                <p>E.E.</p>
             </div>
         </div>
     </div>
@@ -136,6 +199,57 @@ receipt_template = Template("""
 </body>
 </html>
 """)
+
+def convert_number_to_words(num):
+    """Convert number to words in Indian format (Crore, Lakh, Thousand)"""
+    ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
+    tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+    teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+    
+    if num == 0:
+        return "Zero"
+    
+    words = ""
+    
+    # Crores
+    if num >= 10000000:
+        crore_part = int(num / 10000000)
+        words += convert_number_to_words(crore_part) + " Crore "
+        num %= 10000000
+    
+    # Lakhs
+    if num >= 100000:
+        lakh_part = int(num / 100000)
+        words += convert_number_to_words(lakh_part) + " Lakh "
+        num %= 100000
+    
+    # Thousands
+    if num >= 1000:
+        thousand_part = int(num / 1000)
+        words += convert_number_to_words(thousand_part) + " Thousand "
+        num %= 1000
+    
+    # Hundreds
+    if num >= 100:
+        hundred_part = int(num / 100)
+        words += ones[hundred_part] + " Hundred "
+        num %= 100
+    
+    # Tens and ones
+    if num > 0:
+        if words != "":
+            words += "and "
+        
+        if num < 10:
+            words += ones[int(num)]
+        elif num < 20:
+            words += teens[int(num - 10)]
+        else:
+            words += tens[int(num / 10)]
+            if num % 10 > 0:
+                words += " " + ones[int(num % 10)]
+    
+    return words.strip()
 
 def find_column(df_columns, possible_names):
     """Find column by matching possible names"""
@@ -176,7 +290,7 @@ def process_excel_file(file):
                     receipts.append({
                         "payee": payee,
                         "amount": amount,
-                        "amount_words": num2words(amount, lang='en').title(),
+                        "amount_words": convert_number_to_words(int(amount)),
                         "work": work
                     })
             except (ValueError, TypeError):
