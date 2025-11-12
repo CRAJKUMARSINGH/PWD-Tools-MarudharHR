@@ -355,17 +355,38 @@ st.markdown("""
         max-width: 900px;
     }
     
-    /* Balloon animation */
+    /* Balloon animation - Enhanced */
     .balloon {
-        font-size: 3rem;
+        font-size: 3.5rem;
         animation: float 3s ease-in-out infinite;
         display: inline-block;
         margin: 0 0.5rem;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
     }
     
+    .balloon:nth-child(1) { animation-delay: 0s; }
+    .balloon:nth-child(2) { animation-delay: 0.5s; }
+    .balloon:nth-child(3) { animation-delay: 1s; }
+    .balloon:nth-child(4) { animation-delay: 1.5s; }
+    .balloon:nth-child(5) { animation-delay: 2s; }
+    
     @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        25% { transform: translateY(-15px) rotate(-5deg); }
+        50% { transform: translateY(-25px) rotate(0deg); }
+        75% { transform: translateY(-15px) rotate(5deg); }
+    }
+    
+    /* Celebration animation */
+    .celebrate {
+        animation: celebrate 2s ease-in-out infinite;
+    }
+    
+    @keyframes celebrate {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        25% { transform: scale(1.1) rotate(-10deg); }
+        50% { transform: scale(1.2) rotate(10deg); }
+        75% { transform: scale(1.1) rotate(-10deg); }
     }
     
     /* Info boxes */
@@ -468,12 +489,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Header with balloons
+# Header with MORE balloons - REJOICING!
 st.markdown("""
-<div style='text-align: center; padding: 1rem 0;'>
+<div style='text-align: center; padding: 1.5rem 0;'>
     <span class='balloon'>🎈</span>
     <span class='balloon'>🎊</span>
     <span class='balloon'>🎉</span>
+    <span class='balloon'>🎈</span>
+    <span class='balloon'>🎊</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -527,15 +550,22 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
-    # Show file details with nice styling
+    # Show file details with nice styling and celebration
     st.markdown(f"""
-    <div style='background: #e3f2fd; padding: 1rem; border-radius: 10px; margin: 1rem 0;'>
-        <p style='margin: 0; color: #1976d2;'>
-            <strong>📁 File:</strong> {uploaded_file.name} 
+    <div style='background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); 
+                padding: 1.5rem; border-radius: 15px; margin: 1rem 0; 
+                border-left: 5px solid #2196f3; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+        <p style='margin: 0; color: #1976d2; font-size: 1.1rem;'>
+            <span class='celebrate' style='display: inline-block;'>🎉</span>
+            <strong>📁 File Uploaded:</strong> {uploaded_file.name} 
             <strong>📊 Size:</strong> {uploaded_file.size / 1024:.2f} KB
+            <span class='celebrate' style='display: inline-block;'>🎉</span>
         </p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Mini celebration
+    st.balloons()
     
     # Process button
     if st.button("🚀 Generate PDF", type="primary"):
@@ -545,16 +575,39 @@ if uploaded_file is not None:
             if error:
                 st.error(f"❌ {error}")
             else:
+                # BIG CELEBRATION!
                 st.success("✅ PDF generated successfully!")
                 st.balloons()
                 
-                # Download button
+                # Celebration message
+                st.markdown("""
+                <div style='text-align: center; padding: 1rem; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+                            border-radius: 15px; margin: 1rem 0; border: 2px solid #28a745;'>
+                    <p style='margin: 0; font-size: 1.5rem;'>
+                        <span class='celebrate' style='display: inline-block;'>🎊</span>
+                        <span class='celebrate' style='display: inline-block;'>🎉</span>
+                        <span class='celebrate' style='display: inline-block;'>🎈</span>
+                        <strong style='color: #155724;'>SUCCESS!</strong>
+                        <span class='celebrate' style='display: inline-block;'>🎈</span>
+                        <span class='celebrate' style='display: inline-block;'>🎉</span>
+                        <span class='celebrate' style='display: inline-block;'>🎊</span>
+                    </p>
+                    <p style='margin: 0.5rem 0 0 0; color: #155724; font-size: 1.1rem;'>
+                        Your receipts are ready to download!
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Download button with celebration
                 st.download_button(
                     label="📥 Download PDF",
                     data=pdf_bytes,
                     file_name="hand_receipts.pdf",
                     mime="application/pdf"
                 )
+                
+                # More balloons!
+                st.balloons()
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -575,11 +628,15 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Footer balloons
+# Footer balloons - REJOICING!
 st.markdown("""
 <div style='text-align: center; padding: 2rem 0;'>
     <span class='balloon'>🎈</span>
     <span class='balloon'>🎊</span>
     <span class='balloon'>🎉</span>
+    <span class='balloon'>🎈</span>
+    <span class='balloon'>🎊</span>
+    <span class='balloon'>🎉</span>
+    <span class='balloon'>🎈</span>
 </div>
 """, unsafe_allow_html=True)
