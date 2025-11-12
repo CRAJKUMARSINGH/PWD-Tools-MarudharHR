@@ -15,6 +15,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Force cache clear on Streamlit Cloud
+import hashlib
+import time
+CACHE_BUSTER = hashlib.md5(str(time.time()).encode()).hexdigest()[:8]
+
 # Receipt template - EXACT format from emd-refund.html
 receipt_template = Template("""
 <!DOCTYPE html>
@@ -313,9 +318,10 @@ def process_excel_file(file):
     except Exception as e:
         return None, f"Error processing file: {str(e)}"
 
-# Custom CSS for beautiful styling - Inspired by BillGenerator
-st.markdown("""
+# Custom CSS for beautiful styling - Inspired by BillGenerator (v2.1 - Cache Busted)
+st.markdown(f"""
 <style>
+    /* Cache Buster: {CACHE_BUSTER} */
     /* Green Header Styling */
     .main-header {
         background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
@@ -503,15 +509,24 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Beautiful Green Header with Credits
+# Beautiful Green Header with Credits (INLINE STYLES FOR GUARANTEED DISPLAY)
 st.markdown("""
-<div class="main-header">
-    <h1>📄 Hand Receipt Generator (RPWA 28)</h1>
-    <p>🏛️ Generate professional hand receipts for EMD refunds with perfect A4 formatting</p>
-    <div style='text-align: center; margin-top: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.15); 
-                border-radius: 8px;'>
+<div style='background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); 
+            padding: 2rem; border-radius: 10px; margin-bottom: 2rem; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);'>
+    <h1 style='color: white; font-size: 2.5rem; font-weight: 700; margin: 0; 
+               text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); text-align: center;'>
+        📄 Hand Receipt Generator (RPWA 28)
+    </h1>
+    <p style='color: #ecf0f1; font-size: 1.1rem; margin: 0.5rem 0 0 0; text-align: center;'>
+        🏛️ Generate professional hand receipts for EMD refunds with perfect A4 formatting
+    </p>
+    <div style='text-align: center; margin-top: 1rem; padding: 0.8rem; 
+                background: rgba(255,255,255,0.15); border-radius: 8px;'>
         <p style='margin: 0; font-size: 0.85rem; color: #ecf0f1;'>Prepared on Initiative of</p>
-        <p style='margin: 0.3rem 0; font-size: 1.1rem; font-weight: 700; color: white;'>Mrs. Premlata Jain, AAO, PWD Udaipur</p>
+        <p style='margin: 0.3rem 0; font-size: 1.1rem; font-weight: 700; color: white;'>
+            Mrs. Premlata Jain, AAO, PWD Udaipur
+        </p>
     </div>
 </div>
 """, unsafe_allow_html=True)
