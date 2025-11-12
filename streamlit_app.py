@@ -322,9 +322,9 @@ def process_excel_file(file):
         return None, f"Error processing file: {str(e)}"
 
 # Custom CSS for beautiful styling - Inspired by BillGenerator (v2.1 - Cache Busted)
-st.markdown(f"""
+st.markdown("""
 <style>
-    /* Cache Buster: {CACHE_BUSTER} */
+    /* Cache Buster: FORCED REFRESH */
     /* Green Header Styling */
     .main-header {
         background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
